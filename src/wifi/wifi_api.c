@@ -40,7 +40,7 @@ static void free_binary_t_struct(binary_t *data)
     }
 }
 
-void copy_rtp_to_tp(struct rpc_tcp_pcb *rpc_pcb,struct tcp_pcb *pcb)
+void copy_rtp_to_tp(struct rpc_tcp_pcb *rpc_pcb, struct tcp_pcb *pcb)
 {
     pcb->flags = rpc_pcb->flags;
 
@@ -48,7 +48,7 @@ void copy_rtp_to_tp(struct rpc_tcp_pcb *rpc_pcb,struct tcp_pcb *pcb)
     pcb->client_addr = rpc_pcb->client_addr;
 }
 
-void copy_tp_to_rtp(struct tcp_pcb *pcb,struct rpc_tcp_pcb *rpc_pcb)
+void copy_tp_to_rtp(struct tcp_pcb *pcb, struct rpc_tcp_pcb *rpc_pcb)
 {
     rpc_pcb->state = pcb->state;
     rpc_pcb->remote_port = pcb->remote_port;
@@ -59,32 +59,38 @@ void copy_tp_to_rtp(struct tcp_pcb *pcb,struct rpc_tcp_pcb *rpc_pcb)
     rpc_pcb->master_addr = pcb->master_addr;
     rpc_pcb->client_addr = pcb->client_addr;
 
-    ip_addr_copy(rpc_pcb->local_ip,pcb->local_ip);
-    ip_addr_copy(rpc_pcb->remote_ip,pcb->remote_ip);
+    ip_addr_copy(rpc_pcb->local_ip, pcb->local_ip);
+    ip_addr_copy(rpc_pcb->remote_ip, pcb->remote_ip);
 }
 
 //! @name rpc_wifi_drv
 //@{
-int32_t rpc_wifi_connect(const char * ssid, const char * password, uint32_t security_type, int32_t key_id, uint32_t semaphore)
+int32_t rpc_wifi_connect(const char *ssid, const char *password, uint32_t security_type, int32_t key_id, uint32_t semaphore)
 {
     log_d("called");
     int32_t ret = RTW_ERROR;
-    if(password != NULL){
+    if (password != NULL)
+    {
         ret = wifi_connect(ssid, security_type, password, strlen(ssid), strlen(password), key_id, NULL);
-    }else{
+    }
+    else
+    {
         ret = wifi_connect(ssid, security_type, NULL, strlen(ssid), 0, key_id, NULL);
     }
     log_d("exit");
     return ret;
 }
 
-int32_t rpc_wifi_connect_bssid(const binary_t * bssid, const char * ssid, const char * password, uint32_t security_type, int32_t key_id, uint32_t semaphore)
+int32_t rpc_wifi_connect_bssid(const binary_t *bssid, const char *ssid, const char *password, uint32_t security_type, int32_t key_id, uint32_t semaphore)
 {
     log_d("called");
     int32_t ret = RTW_ERROR;
-    if(password != NULL){
+    if (password != NULL)
+    {
         ret = wifi_connect_bssid(bssid->data, ssid, security_type, password, 6, strlen(ssid), strlen(password), key_id, NULL);
-    }else{
+    }
+    else
+    {
         ret = wifi_connect_bssid(bssid->data, ssid, security_type, NULL, 6, strlen(ssid), 0, key_id, NULL);
     }
     log_d("exit");
@@ -398,22 +404,26 @@ int32_t rpc_wifi_set_mfp_support(uint8_t value)
     return ret;
 }
 
-int32_t rpc_wifi_start_ap(const char * ssid, const char * password, uint32_t security_type, int32_t channel)
+int32_t rpc_wifi_start_ap(const char *ssid, const char *password, uint32_t security_type, int32_t channel)
 {
     log_d("called");
     int32_t ret = 0;
     int timeout = 20;
-    if(password != NULL ){
+    if (password != NULL)
+    {
         ret = wifi_start_ap(ssid, security_type, password, strlen(ssid), strlen(password), channel);
-    }else{
+    }
+    else
+    {
         ret = wifi_start_ap(ssid, security_type, NULL, strlen(ssid), 0, channel);
     }
     while (1)
     {
         char essid[33];
-        const char * wlan_name = WLAN0_NAME;
+        const char *wlan_name = WLAN0_NAME;
 
-        if(wifi_work_mode == RTW_MODE_STA_AP){
+        if (wifi_work_mode == RTW_MODE_STA_AP)
+        {
             wlan_name = WLAN1_NAME;
         }
 
@@ -445,14 +455,17 @@ int32_t rpc_wifi_start_ap(const char * ssid, const char * password, uint32_t sec
     return ret;
 }
 
-int32_t rpc_wifi_start_ap_with_hidden_ssid(const char * ssid, const char * password, uint32_t security_type, int32_t channel)
+int32_t rpc_wifi_start_ap_with_hidden_ssid(const char *ssid, const char *password, uint32_t security_type, int32_t channel)
 {
     log_d("called");
     int32_t ret = 0;
     int timeout = 20;
-    if(password!= NULL){
+    if (password != NULL)
+    {
         ret = wifi_start_ap_with_hidden_ssid(ssid, security_type, password, strlen(ssid), strlen(password), channel);
-    }else{
+    }
+    else
+    {
         ret = wifi_start_ap_with_hidden_ssid(ssid, security_type, NULL, strlen(ssid), 0, channel);
     }
     while (1)
@@ -1006,7 +1019,9 @@ int32_t rpc_lwip_available(int32_t s)
     log_d("called %d", s);
     uint8_t c;
     int ret = 0;
-    int try = 20;
+    int
+    try
+        = 20;
 
     struct sockaddr from;
     socklen_t fromlen;
@@ -1089,7 +1104,7 @@ int32_t rpc_lwip_recvfrom(int32_t s, binary_t *mem, uint32_t len, int32_t flags,
     log_d("called");
     uint8_t *_mem = (uint8_t *)erpc_malloc((len + 1) * sizeof(uint8_t));
     int32_t ret = -1;
-    struct sockaddr * _from = (struct sockaddr *)erpc_malloc(sizeof(struct sockaddr));
+    struct sockaddr *_from = (struct sockaddr *)erpc_malloc(sizeof(struct sockaddr));
     ret = lwip_recvfrom(s, _mem, len, flags, _from, (socklen_t *)fromlen);
     if (ret > 0)
     {
@@ -1101,7 +1116,7 @@ int32_t rpc_lwip_recvfrom(int32_t s, binary_t *mem, uint32_t len, int32_t flags,
         mem->data = _mem;
         mem->dataLength = 1;
     }
-    
+
     from->data = (uint8_t *)_from;
     from->dataLength = sizeof(struct sockaddr);
 
@@ -1270,29 +1285,12 @@ int8_t rpc_dns_gethostbyname_addrtype(const char *hostname, binary_t *addr, uint
     addr->dataLength = sizeof(ip_addr_t);
 
     int ret = 0;
-    if (found != 0)
+
+    ret = dns_gethostbyname_addrtype(hostname, addr_info, wifi_dns_found, callback_arg, dns_addrtype);
+
+    if (ret == ERR_OK && found != 0)
     {
-        ret = dns_gethostbyname_addrtype(hostname, addr_info, wifi_dns_found, callback_arg, dns_addrtype);
-        if (addr)
-        {
-            erpc_free(addr);
-        }
-    }
-    else
-    {
-        ret = dns_gethostbyname_addrtype(hostname, addr_info, NULL, callback_arg, dns_addrtype);
-        if (hostname)
-        {
-            erpc_free(hostname);
-        }
-        if (addr)
-        {
-            free_binary_t_struct(addr);
-        }
-        if (addr)
-        {
-            erpc_free(addr);
-        }
+        wifi_dns_found(hostname, addr_info, callback_arg);
         if (callback_arg)
         {
             free_binary_t_struct(callback_arg);
@@ -1301,6 +1299,19 @@ int8_t rpc_dns_gethostbyname_addrtype(const char *hostname, binary_t *addr, uint
         {
             erpc_free(callback_arg);
         }
+    }
+
+    if (hostname)
+    {
+        erpc_free(hostname);
+    }
+    if (addr)
+    {
+        free_binary_t_struct(addr);
+    }
+    if (addr)
+    {
+        erpc_free(addr);
     }
 
     log_d("exit");
@@ -1359,90 +1370,90 @@ uint32_t rpc_wifi_ssl_get_timeout(uint32_t ssl_client)
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_set_rootCA(uint32_t ssl_client, const char * rootCABuff)
+uint32_t rpc_wifi_ssl_set_rootCA(uint32_t ssl_client, const char *rootCABuff)
 {
     log_d("called");
     wifi_ssl_set_rootCA(ssl_client, rootCABuff);
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_get_rootCA(uint32_t ssl_client, char * rootCABuff)
+uint32_t rpc_wifi_ssl_get_rootCA(uint32_t ssl_client, char *rootCABuff)
 {
     log_d("called");
     uint32_t ret = wifi_ssl_get_rootCA(ssl_client);
-    if(rootCABuff != NULL)
+    if (rootCABuff != NULL)
     {
         strcpy(rootCABuff, (char *)ret);
     }
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_set_cliCert(uint32_t ssl_client, const char * cli_cert)
+uint32_t rpc_wifi_ssl_set_cliCert(uint32_t ssl_client, const char *cli_cert)
 {
     log_d("called");
     wifi_ssl_set_cliCert(ssl_client, cli_cert);
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_get_cliCert(uint32_t ssl_client, const char * cli_cert)
+uint32_t rpc_wifi_ssl_get_cliCert(uint32_t ssl_client, const char *cli_cert)
 {
     log_d("called");
     uint32_t ret = wifi_ssl_get_rootCA(ssl_client);
-    if(cli_cert != NULL)
+    if (cli_cert != NULL)
     {
         strcpy(cli_cert, (char *)ret);
     }
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_set_cliKey(uint32_t ssl_client, const char * cli_key)
+uint32_t rpc_wifi_ssl_set_cliKey(uint32_t ssl_client, const char *cli_key)
 {
     log_d("called");
     wifi_ssl_set_cliKey(ssl_client, cli_key);
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_get_cliKey(uint32_t ssl_client, const char * cli_key)
+uint32_t rpc_wifi_ssl_get_cliKey(uint32_t ssl_client, const char *cli_key)
 {
     log_d("called");
     uint32_t ret = wifi_ssl_get_cliKey(ssl_client);
-    if(cli_key != NULL)
+    if (cli_key != NULL)
     {
         strcpy(cli_key, (char *)ret);
     }
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_set_pskIdent(uint32_t ssl_client, const char * pskIdent)
+uint32_t rpc_wifi_ssl_set_pskIdent(uint32_t ssl_client, const char *pskIdent)
 {
     log_d("called");
     wifi_ssl_set_pskIdent(ssl_client, pskIdent);
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_get_pskIdent(uint32_t ssl_client, const char * pskIdent)
+uint32_t rpc_wifi_ssl_get_pskIdent(uint32_t ssl_client, const char *pskIdent)
 {
     log_d("called");
     uint32_t ret = wifi_ssl_get_pskIdent(ssl_client);
-    if(pskIdent != NULL)
+    if (pskIdent != NULL)
     {
         strcpy(pskIdent, (char *)ret);
     }
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_set_psKey(uint32_t ssl_client, const char * psKey)
+uint32_t rpc_wifi_ssl_set_psKey(uint32_t ssl_client, const char *psKey)
 {
     log_d("called");
     wifi_ssl_set_psKey(ssl_client, psKey);
     log_d("exit");
 }
 
-uint32_t rpc_wifi_ssl_get_psKey(uint32_t ssl_client, const char * psKey)
+uint32_t rpc_wifi_ssl_get_psKey(uint32_t ssl_client, const char *psKey)
 {
     log_d("called");
     uint32_t ret = wifi_ssl_get_psKey(ssl_client);
-    if(psKey != NULL)
+    if (psKey != NULL)
     {
         strcpy(psKey, (char *)ret);
     }
@@ -1525,7 +1536,7 @@ void rpc_wifi_ssl_strerror(int32_t errnum, binary_t *buffer, uint32_t buflen)
     log_d("exit");
 }
 
-int32_t rpc_tcpip_api_call(const binary_t * func, const binary_t * call)
+int32_t rpc_tcpip_api_call(const binary_t *func, const binary_t *call)
 {
     int32_t ret;
 
@@ -1534,7 +1545,7 @@ int32_t rpc_tcpip_api_call(const binary_t * func, const binary_t * call)
     return ret;
 }
 
-int32_t rpc_tcp_connected_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb, err_t err)
+int32_t rpc_tcp_connected_external(uint32_t addr, void *arg, struct tcp_pcb *tpcb, err_t err)
 {
     int32_t ret;
     struct rpc_tcp_pcb rtpcb;
@@ -1542,7 +1553,7 @@ int32_t rpc_tcp_connected_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb
     binary_t tpcb_b;
     uint32_t arg_addr = (uint32_t)arg;
 
-    copy_tp_to_rtp(tpcb,&rtpcb);
+    copy_tp_to_rtp(tpcb, &rtpcb);
 
     arg_b.data = &arg_addr;
     arg_b.dataLength = 4;
@@ -1550,68 +1561,72 @@ int32_t rpc_tcp_connected_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb
     tpcb_b.data = &rtpcb;
     tpcb_b.dataLength = sizeof(struct rpc_tcp_pcb);
 
-    log_d("func:%x,arg:%x,pcb:%x,err:%d",addr,arg,tpcb->client_addr,err);
+    log_d("func:%x,arg:%x,pcb:%x,err:%d", addr, arg, tpcb->client_addr, err);
 
-    ret = rpc_tcp_connected_fn(addr,&arg_b,&tpcb_b,err);
+    ret = rpc_tcp_connected_fn(addr, &arg_b, &tpcb_b, err);
 
     return ret;
 }
 
 //err_t tcp_connect(struct tcp_pcb *pcb, const ip_addr_t *ipaddr,u16_t port, tcp_connected_fn connected)
-int32_t rpc_tcp_connect(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * ipaddr, uint16_t port, const binary_t * connected)
+int32_t rpc_tcp_connect(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *ipaddr, uint16_t port, const binary_t *connected)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    ip_addr_t * ipaddr_p = NULL;
-    uint32_t * func_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    ip_addr_t *ipaddr_p = NULL;
+    uint32_t *func_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
             ipaddr_p = (ip_addr_t *)ipaddr->data;
 
             func_addr = (uint32_t *)connected->data;
 
-            log_d("pcb:%x,ip:%x,port:%d,func:%x",tpcb_p,ipaddr_p,port,*func_addr);
+            log_d("pcb:%x,ip:%x,port:%d,func:%x", tpcb_p, ipaddr_p, port, *func_addr);
 
-            ret = tcp_connect(tpcb_p,ipaddr_p,port,(tcp_connected_fn)*func_addr);
+            ret = tcp_connect(tpcb_p, ipaddr_p, port, (tcp_connected_fn)*func_addr);
             tpcb_p->connected_external = rpc_tcp_connected_external;
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ret;    
+    return ret;
 }
 
 //void tcp_recved(struct tcp_pcb *pcb, u16_t len)
-int32_t rpc_tcp_recved(const binary_t * pcb_in, binary_t * pcb_out, uint16_t len)
+int32_t rpc_tcp_recved(const binary_t *pcb_in, binary_t *pcb_out, uint16_t len)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
-            log_d("pcb:%x,len:%d",tpcb_p,len);
-            tcp_recved(tpcb_p,len);
+            log_d("pcb:%x,len:%d", tpcb_p, len);
+            tcp_recved(tpcb_p, len);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
@@ -1621,21 +1636,22 @@ int32_t rpc_tcp_recved(const binary_t * pcb_in, binary_t * pcb_out, uint16_t len
 }
 
 //u8_t pbuf_free(struct pbuf *p)
-int32_t rpc_pbuf_free(const binary_t * p)
+int32_t rpc_pbuf_free(const binary_t *p)
 {
     int32_t ret;
-    uint32_t * pbuf_addr = (uint32_t *)p->data;
-    struct pbuf * p_tmp = (struct pbuf *)*pbuf_addr;
+    uint32_t *pbuf_addr = (uint32_t *)p->data;
+    struct pbuf *p_tmp = (struct pbuf *)*pbuf_addr;
 
-    log_d("pbuf:%x",p_tmp);
-    if(p_tmp != NULL){
+    log_d("pbuf:%x", p_tmp);
+    if (p_tmp != NULL)
+    {
         ret = pbuf_free(p_tmp);
     }
 
-    return ret; 
+    return ret;
 }
 
-int32_t rpc_tcp_poll_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb)
+int32_t rpc_tcp_poll_external(uint32_t addr, void *arg, struct tcp_pcb *tpcb)
 {
     int32_t ret;
     struct rpc_tcp_pcb rtpcb;
@@ -1643,7 +1659,7 @@ int32_t rpc_tcp_poll_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb)
     binary_t tpcb_b;
     uint32_t arg_addr = (uint32_t)arg;
 
-    copy_tp_to_rtp(tpcb,&rtpcb);
+    copy_tp_to_rtp(tpcb, &rtpcb);
 
     arg_b.data = &arg_addr;
     arg_b.dataLength = 4;
@@ -1651,38 +1667,40 @@ int32_t rpc_tcp_poll_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb)
     tpcb_b.data = &rtpcb;
     tpcb_b.dataLength = sizeof(struct rpc_tcp_pcb);
 
-    log_d("func:%x,arg:%x,pcb:%x",addr,arg,tpcb);
+    log_d("func:%x,arg:%x,pcb:%x", addr, arg, tpcb);
 
-    ret = rpc_tcp_poll_fn(addr,&arg_b,&tpcb_b);
+    ret = rpc_tcp_poll_fn(addr, &arg_b, &tpcb_b);
 
     return ret;
 }
 
 //void tcp_poll(struct tcp_pcb *pcb, tcp_poll_fn poll, u8_t interval)
-int32_t rpc_tcp_poll(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * func_poll, uint8_t interval)
+int32_t rpc_tcp_poll(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *func_poll, uint8_t interval)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    uint32_t * func_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    uint32_t *func_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
             func_addr = (uint32_t *)func_poll->data;
 
-            log_d("func:%x pcb:%x inter:%d",*func_addr,tpcb_p,interval);
+            log_d("func:%x pcb:%x inter:%d", *func_addr, tpcb_p, interval);
 
-            tcp_poll(tpcb_p,(tcp_poll_fn)*func_addr,interval);
+            tcp_poll(tpcb_p, (tcp_poll_fn)*func_addr, interval);
             tpcb_p->poll_external = rpc_tcp_poll_external;
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
@@ -1691,7 +1709,7 @@ int32_t rpc_tcp_poll(const binary_t * pcb_in, binary_t * pcb_out, const binary_t
     return ERR_OK;
 }
 
-int32_t rpc_tcp_accept_external(uint32_t addr,void *arg, struct tcp_pcb *newpcb, err_t err)
+int32_t rpc_tcp_accept_external(uint32_t addr, void *arg, struct tcp_pcb *newpcb, err_t err)
 {
     int32_t ret;
     struct rpc_tcp_pcb rtpcb;
@@ -1700,7 +1718,7 @@ int32_t rpc_tcp_accept_external(uint32_t addr,void *arg, struct tcp_pcb *newpcb,
     uint32_t arg_addr = (uint32_t)arg;
 
     newpcb->client_addr = newpcb;
-    copy_tp_to_rtp(newpcb,&rtpcb);
+    copy_tp_to_rtp(newpcb, &rtpcb);
 
     arg_b.data = &arg_addr;
     arg_b.dataLength = 4;
@@ -1708,92 +1726,102 @@ int32_t rpc_tcp_accept_external(uint32_t addr,void *arg, struct tcp_pcb *newpcb,
     tpcb_b.data = &rtpcb;
     tpcb_b.dataLength = sizeof(struct rpc_tcp_pcb);
 
-    log_d("func:%x,arg:%x,npcb:%x,err:%d",addr,arg,newpcb,err);
+    log_d("func:%x,arg:%x,npcb:%x,err:%d", addr, arg, newpcb, err);
 
-    ret = rpc_tcp_accept_fn(addr,&arg_b,&tpcb_b,err);
+    ret = rpc_tcp_accept_fn(addr, &arg_b, &tpcb_b, err);
 
     return ret;
 }
 
 //void tcp_accept(struct tcp_pcb *pcb, tcp_accept_fn accept)
-int32_t rpc_tcp_accept(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * func_accept)
+int32_t rpc_tcp_accept(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *func_accept)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    uint32_t * func_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    uint32_t *func_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
             func_addr = (uint32_t *)func_accept->data;
 
-            log_d("func:%x,pcb:%x",*func_addr,tpcb_p);
+            log_d("func:%x,pcb:%x", *func_addr, tpcb_p);
 
-            tcp_accept(tpcb_p,(tcp_accept_fn)*func_addr);
-            struct tcp_pcb_listen * tpcbl_p = (struct tcp_pcb_listen *)tpcb_p;
+            tcp_accept(tpcb_p, (tcp_accept_fn)*func_addr);
+            struct tcp_pcb_listen *tpcbl_p = (struct tcp_pcb_listen *)tpcb_p;
             tpcbl_p->accept_external = rpc_tcp_accept_external;
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ERR_OK;  
+    return ERR_OK;
 }
 
 //struct tcp_pcb * tcp_listen_with_backlog(struct tcp_pcb *pcb, u8_t backlog)
-int32_t rpc_tcp_listen_with_backlog(const binary_t * pcb_in, binary_t * pcb_out, uint8_t backlog)
+int32_t rpc_tcp_listen_with_backlog(const binary_t *pcb_in, binary_t *pcb_out, uint8_t backlog)
 {
     uint32_t master_addr = 0;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    struct tcp_pcb * tpcb_ret_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    struct tcp_pcb *tpcb_ret_p = NULL;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
             master_addr = rtpcb_p->master_addr;
 
-            log_d("in:pcb:%x back:%d",rtpcb_p->client_addr,backlog);
+            log_d("in:pcb:%x back:%d", rtpcb_p->client_addr, backlog);
 
-            tpcb_ret_p = tcp_listen_with_backlog(tpcb_p,backlog);
+            tpcb_ret_p = tcp_listen_with_backlog(tpcb_p, backlog);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            if(tpcb_ret_p == NULL){
+            if (tpcb_ret_p == NULL)
+            {
                 rtpcb_p->client_addr = 0;
-            }else{
+            }
+            else
+            {
                 tpcb_ret_p->master_addr = master_addr;
                 tpcb_ret_p->client_addr = (uint32_t)tpcb_ret_p;
-                copy_tp_to_rtp(tpcb_ret_p,rtpcb_p);
+                copy_tp_to_rtp(tpcb_ret_p, rtpcb_p);
             }
 
-            log_d("out:retpcb:%x",tpcb_ret_p);
+            log_d("out:retpcb:%x", tpcb_ret_p);
 
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    if(tpcb_ret_p == NULL){
+    if (tpcb_ret_p == NULL)
+    {
         return ERR_ARG;
-    }else{
+    }
+    else
+    {
         return ERR_OK;
     }
 }
 
-int32_t rpc_tcp_sent_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,u16_t len)
+int32_t rpc_tcp_sent_external(uint32_t addr, void *arg, struct tcp_pcb *tpcb, u16_t len)
 {
     int32_t ret;
     struct rpc_tcp_pcb rtpcb;
@@ -1801,7 +1829,7 @@ int32_t rpc_tcp_sent_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,u16_
     binary_t tpcb_b;
     uint32_t arg_addr = (uint32_t)arg;
 
-    copy_tp_to_rtp(tpcb,&rtpcb);
+    copy_tp_to_rtp(tpcb, &rtpcb);
 
     arg_b.data = &arg_addr;
     arg_b.dataLength = 4;
@@ -1809,47 +1837,49 @@ int32_t rpc_tcp_sent_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,u16_
     tpcb_b.data = &rtpcb;
     tpcb_b.dataLength = sizeof(struct rpc_tcp_pcb);
 
-    log_d("func:%x,arg:%x,pcb:%x,len:%d",addr,arg,tpcb->client_addr,len);
+    log_d("func:%x,arg:%x,pcb:%x,len:%d", addr, arg, tpcb->client_addr, len);
 
-    ret = rpc_tcp_sent_fn(addr,&arg_b,&tpcb_b,len);
+    ret = rpc_tcp_sent_fn(addr, &arg_b, &tpcb_b, len);
 
     return ret;
 }
 
 //void tcp_sent(struct tcp_pcb *pcb, tcp_sent_fn sent)
-int32_t rpc_tcp_sent(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * func_sent)
+int32_t rpc_tcp_sent(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *func_sent)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    uint32_t * func_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    uint32_t *func_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
             func_addr = (uint32_t *)func_sent->data;
 
-            log_d("func:%x,pcb:%x",*func_addr,tpcb_p);
+            log_d("func:%x,pcb:%x", *func_addr, tpcb_p);
 
-            tcp_sent(tpcb_p,(tcp_sent_fn)*func_addr);
+            tcp_sent(tpcb_p, (tcp_sent_fn)*func_addr);
             tpcb_p->sent_external = rpc_tcp_sent_external;
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ERR_OK;  
+    return ERR_OK;
 }
 
-int32_t rpc_tcp_recv_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,struct pbuf *p, err_t err)
+int32_t rpc_tcp_recv_external(uint32_t addr, void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 {
     int32_t ret;
     struct rpc_tcp_pcb rtpcb;
@@ -1864,7 +1894,7 @@ int32_t rpc_tcp_recv_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,stru
 
     log_d("called");
 
-    copy_tp_to_rtp(tpcb,&rtpcb);
+    copy_tp_to_rtp(tpcb, &rtpcb);
 
     arg_b.data = &arg_addr;
     arg_b.dataLength = 4;
@@ -1872,13 +1902,17 @@ int32_t rpc_tcp_recv_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,stru
     tpcb_b.data = &rtpcb;
     tpcb_b.dataLength = sizeof(struct rpc_tcp_pcb);
 
-    if(p && p->tot_len > 0){
+    if (p && p->tot_len > 0)
+    {
         pbuf_b.data = erpc_malloc(p->tot_len);
         pbuf_b.dataLength = p->tot_len;
-        if(pbuf_b.data == NULL){
+        if (pbuf_b.data == NULL)
+        {
             return ERR_MEM;
         }
-    }else{
+    }
+    else
+    {
         pbuf_b.data = &pbuf_addr;
         pbuf_b.dataLength = 4;
     }
@@ -1887,16 +1921,18 @@ int32_t rpc_tcp_recv_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,stru
     pbuf_addr_b.dataLength = 4;
 
     p_tmp = p;
-    while(p_tmp != NULL){
-        memcpy(&pbuf_b.data[pbuf_count],p_tmp->payload,p_tmp->len);
+    while (p_tmp != NULL)
+    {
+        memcpy(&pbuf_b.data[pbuf_count], p_tmp->payload, p_tmp->len);
         pbuf_count += p_tmp->len;
         p_tmp = p_tmp->next;
     }
 
-    log_d("func:%x,arg:%x,pcb:%x,pbuf:%d,err:%d",addr,arg,tpcb->client_addr,pbuf_count,err);
-    ret = rpc_tcp_recv_fn(addr,&arg_b,&tpcb_b,&pbuf_b,&pbuf_addr_b,err);
+    log_d("func:%x,arg:%x,pcb:%x,pbuf:%d,err:%d", addr, arg, tpcb->client_addr, pbuf_count, err);
+    ret = rpc_tcp_recv_fn(addr, &arg_b, &tpcb_b, &pbuf_b, &pbuf_addr_b, err);
 
-    if(pbuf_b.data){
+    if (pbuf_b.data)
+    {
         erpc_free(pbuf_b.data);
     }
 
@@ -1904,39 +1940,41 @@ int32_t rpc_tcp_recv_external(uint32_t addr,void *arg, struct tcp_pcb *tpcb,stru
 }
 
 //void tcp_recv(struct tcp_pcb *pcb, tcp_recv_fn recv)
-int32_t rpc_tcp_recv(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * func_recv)
+int32_t rpc_tcp_recv(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *func_recv)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    uint32_t * func_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    uint32_t *func_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
             func_addr = (uint32_t *)func_recv->data;
 
-            log_d("func:%x,pcb:%x",*func_addr,tpcb_p);
+            log_d("func:%x,pcb:%x", *func_addr, tpcb_p);
 
-            tcp_recv(tpcb_p,(tcp_recv_fn)*func_addr);
+            tcp_recv(tpcb_p, (tcp_recv_fn)*func_addr);
             tpcb_p->recv_external = rpc_tcp_recv_external;
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ERR_OK; 
+    return ERR_OK;
 }
 
-int32_t rpc_tcp_err_external(uint32_t addr,void *arg, err_t err)
+int32_t rpc_tcp_err_external(uint32_t addr, void *arg, err_t err)
 {
     int32_t ret;
     struct rpc_tcp_pcb rtpcb;
@@ -1946,160 +1984,175 @@ int32_t rpc_tcp_err_external(uint32_t addr,void *arg, err_t err)
     arg_b.data = &arg_addr;
     arg_b.dataLength = 4;
 
-    log_d("func:%x,arg:%x,err:%d",addr,arg,err);
+    log_d("func:%x,arg:%x,err:%d", addr, arg, err);
 
-    ret = rpc_tcp_err_fn(addr,&arg_b,err);
+    ret = rpc_tcp_err_fn(addr, &arg_b, err);
 
     return ret;
 }
 
 //void tcp_err(struct tcp_pcb *pcb, tcp_err_fn err)
-int32_t rpc_tcp_err(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * func_err)
+int32_t rpc_tcp_err(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *func_err)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    uint32_t * func_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    uint32_t *func_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
             func_addr = (uint32_t *)func_err->data;
 
-            log_d("func:%x,pcb:%x",*func_addr,tpcb_p);
+            log_d("func:%x,pcb:%x", *func_addr, tpcb_p);
 
-            tcp_err(tpcb_p,(tcp_err_fn)*func_addr);
+            tcp_err(tpcb_p, (tcp_err_fn)*func_addr);
             tpcb_p->errf_external = rpc_tcp_err_external;
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ERR_OK; 
+    return ERR_OK;
 }
 
 //void tcp_arg(struct tcp_pcb *pcb, void *arg)
-int32_t rpc_tcp_arg(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * func_arg)
+int32_t rpc_tcp_arg(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *func_arg)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
-    uint32_t * argv_addr;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
+    uint32_t *argv_addr;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
             argv_addr = (void *)func_arg->data;
-            log_d("arg:%x,pcb:%x",*argv_addr,tpcb_p);
+            log_d("arg:%x,pcb:%x", *argv_addr, tpcb_p);
 
-            tcp_arg(tpcb_p,(void *)(*argv_addr));
+            tcp_arg(tpcb_p, (void *)(*argv_addr));
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ERR_OK; 
+    return ERR_OK;
 }
 
 //struct tcp_pcb * tcp_new_ip_type (u8_t type)
-int32_t rpc_tcp_new_ip_type(uint8_t ip_type, binary_t * pcb_out)
+int32_t rpc_tcp_new_ip_type(uint8_t ip_type, binary_t *pcb_out)
 {
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_new_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_new_p = NULL;
 
     tpcb_new_p = tcp_new_ip_type(ip_type);
 
     rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-    if(tpcb_new_p == NULL){
+    if (tpcb_new_p == NULL)
+    {
         rtpcb_p->master_addr = 0;
         rtpcb_p->client_addr = 0;
-    }else{
+    }
+    else
+    {
         tpcb_new_p->master_addr = 0;
         tpcb_new_p->client_addr = (uint32_t)tpcb_new_p;
-        copy_tp_to_rtp(tpcb_new_p,rtpcb_p);
+        copy_tp_to_rtp(tpcb_new_p, rtpcb_p);
     }
 
     pcb_out->data = rtpcb_p;
     pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
 
-    log_d("type:%d,pcb:%x",ip_type,tpcb_new_p);
+    log_d("type:%d,pcb:%x", ip_type, tpcb_new_p);
 
-    if(tpcb_new_p == NULL){
+    if (tpcb_new_p == NULL)
+    {
         return ERR_ARG;
-    }else{
+    }
+    else
+    {
         return ERR_OK;
     }
 }
 
 //err_t tcp_bind(struct tcp_pcb *pcb, const ip_addr_t *ipaddr,u16_t port)
-int32_t rpc_tcp_bind(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * ipaddr, uint16_t port)
+int32_t rpc_tcp_bind(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *ipaddr, uint16_t port)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
     ip_addr_t ipaddr_p;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
             ipaddr_p.addr = *((uint32_t *)ipaddr->data);
 
-            log_d("pcb:%x,ip:%x,port:%d",tpcb_p,ipaddr_p,port);
+            log_d("pcb:%x,ip:%x,port:%d", tpcb_p, ipaddr_p, port);
 
-            ret = tcp_bind(tpcb_p,&ipaddr_p,port);
+            ret = tcp_bind(tpcb_p, &ipaddr_p, port);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
     }
 
-    return ret; 
+    return ret;
 }
 
 //err_t tcp_close(struct tcp_pcb *pcb)
-int32_t rpc_tcp_close(const binary_t * pcb_in, binary_t * pcb_out)
+int32_t rpc_tcp_close(const binary_t *pcb_in, binary_t *pcb_out)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
-            log_d("pcb:%x",tpcb_p);
+            log_d("pcb:%x", tpcb_p);
 
             ret = tcp_close(tpcb_p);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            if(ret != ERR_OK){
-                copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            if (ret != ERR_OK)
+            {
+                copy_tp_to_rtp(tpcb_p, rtpcb_p);
             }
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
@@ -2110,26 +2163,28 @@ int32_t rpc_tcp_close(const binary_t * pcb_in, binary_t * pcb_out)
 }
 
 //err_t tcp_output(struct tcp_pcb *pcb)
-int32_t rpc_tcp_output(const binary_t * pcb_in, binary_t * pcb_out)
+int32_t rpc_tcp_output(const binary_t *pcb_in, binary_t *pcb_out)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
-            log_d("pcb:%x",tpcb_p);
+            log_d("pcb:%x", tpcb_p);
 
             ret = tcp_output(tpcb_p);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
@@ -2139,26 +2194,28 @@ int32_t rpc_tcp_output(const binary_t * pcb_in, binary_t * pcb_out)
 }
 
 //void tcp_abort(struct tcp_pcb *pcb)
-int32_t rpc_tcp_abort(const binary_t * pcb_in, binary_t * pcb_out)
+int32_t rpc_tcp_abort(const binary_t *pcb_in, binary_t *pcb_out)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
-            log_d("pcb:%x",tpcb_p);
+            log_d("pcb:%x", tpcb_p);
 
             tcp_abort(tpcb_p);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
@@ -2168,26 +2225,28 @@ int32_t rpc_tcp_abort(const binary_t * pcb_in, binary_t * pcb_out)
 }
 
 //err_t tcp_write(struct tcp_pcb *pcb, const void *dataptr, u16_t len,u8_t apiflags)
-int32_t rpc_tcp_write(const binary_t * pcb_in, binary_t * pcb_out, const binary_t * data, uint8_t apiflags)
+int32_t rpc_tcp_write(const binary_t *pcb_in, binary_t *pcb_out, const binary_t *data, uint8_t apiflags)
 {
     int32_t ret = ERR_ARG;
-    struct rpc_tcp_pcb * rtpcb_p = NULL;
-    struct tcp_pcb * tpcb_p = NULL;
+    struct rpc_tcp_pcb *rtpcb_p = NULL;
+    struct tcp_pcb *tpcb_p = NULL;
 
     log_d("called");
 
-    if(pcb_in->data != NULL){
+    if (pcb_in->data != NULL)
+    {
         rtpcb_p = (struct rpc_tcp_pcb *)pcb_in->data;
-        if(rtpcb_p->client_addr){
+        if (rtpcb_p->client_addr)
+        {
             tpcb_p = (struct tcp_pcb *)rtpcb_p->client_addr;
-            copy_rtp_to_tp(rtpcb_p,tpcb_p);
+            copy_rtp_to_tp(rtpcb_p, tpcb_p);
 
-            log_d("pcb:%x,data:%d,flag:%d",tpcb_p,data->dataLength,apiflags);
+            log_d("pcb:%x,data:%d,flag:%d", tpcb_p, data->dataLength, apiflags);
 
-            ret = tcp_write(tpcb_p,data->data,data->dataLength,apiflags);
+            ret = tcp_write(tpcb_p, data->data, data->dataLength, apiflags);
 
             rtpcb_p = (struct rpc_tcp_pcb *)erpc_malloc(sizeof(struct rpc_tcp_pcb));
-            copy_tp_to_rtp(tpcb_p,rtpcb_p);
+            copy_tp_to_rtp(tpcb_p, rtpcb_p);
             pcb_out->data = rtpcb_p;
             pcb_out->dataLength = sizeof(struct rpc_tcp_pcb);
         }
